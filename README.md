@@ -26,8 +26,8 @@ How To Install:
 ---------------
 
 To use this project, it is necessary to use the "fujinet-floppy-serial-bridge" branch of my [FujiNet fork].
-Alternatively, commit 6e289701f7c8e8d0bf71c6c6ffdf7b793a6349fb shows the relevant changes to FujiNet. Only
-two files need to be changed.
+Alternatively, commit [6e28970](https://github.com/FujiNetWIFI/fujinet-firmware/commit/6e289701f7c8e8d0bf71c6c6ffdf7b793a6349fb)
+shows the relevant changes to FujiNet so that they might be applied to a later version.
 
 Then, set either "MAC_SERIAL_LOOPBACK_TEST" or "MAC_SERIAL_USB_SERIAL_TEST" in [floppy_serial_handler.cpp] to 1,
 but not both, to configure the operating mode.

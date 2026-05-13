@@ -42,14 +42,14 @@ The resulting `FujiSerialStub.rsrc.bin` is byte-equivalent to what
 THINK C would produce and dispatches correctly when invoked
 (see Phase 2).
 
-### Phase 2 — Runtime validation
+### Phase 2 — Runtime validation (done)
 
 * **#8** Build a Retro68 test app (`FujiStubTest.APPL`) that loads
   the stub resource, patches its `drvrHndl` placeholder to a
   controllable fake destination DRVR, and confirms that all five
   dispatch slots (Open/Prime/Control/Status/Close) reach the
-  correct fake routine. Direct-call dispatch is covered today;
-  full device-manager (PBControl/PBStatus/...) coverage is deferred
+  correct fake routine. **Verified 5/5 PASS in Mini vMac.** Full
+  device-manager (PBControl/PBStatus/...) coverage is deferred
   until a real `.Fuji` driver exists to install (Phase 3).
 
 ### Phase 3 — Real driver port

@@ -16,11 +16,19 @@ Presently, the ESP32 can operate in one of two modes:
 1. It can act as a loopback interface, echoing back any received data
 2. Bridge the connection to an external host via the USB port
 
-[![FujiNet Serial Demonstration](https://github.com/marciot/mac68k-fujinet/raw/main/images/youtube.png)](https://youtu.be/d1GNirCGzVg)
+[![FujiNet Serial Demonstration](https://github.com/marciot/mac68k-fujinet-serial/raw/main/images/youtube.png)](https://youtu.be/d1GNirCGzVg)
 
 :tv: See a demo on [YouTube]!
 
 [YouTube]: https://youtu.be/d1GNirCGzVg
+
+Requirements:
+-------------
+
+* A classic 68k Macintosh with an external floppy/DCD-capable port. The driver code is sized to fit on
+  a 128 KB or 512 KB Mac, and has been used on later compact Macs as well.
+* A [FujiNet adapter] (Apple 68k variant) connected to the floppy port.
+* The [FujiNet fork] flashed onto the ESP32 (see below for the specific branch / commit).
 
 How To Install:
 ---------------
@@ -87,14 +95,75 @@ small and fast.
 These files currently live in the [FujiCommon] directory because there is also
 a Macintosh test app in [FujiTests] that can be used for testing. It is capable
 of loading the drivers, independently of the Desk Accessory, while printing
-troubleshooting messages.
+troubleshooting messages. The test app contains:
+
+* `FloppyTests.c` — exercises drive enumeration and DCD block I/O against the FujiNet adapter.
+* `SerialTests.c` — benchmarks throughput through the patched `.AIn` / `.AOut` / `.BIn` / `.BOut` drivers.
+* `TCPTests.c` — exercises MacTCP stream creation/release (paired with the headers in `MacTCP_Includes/`).
+
+Linux host tool:
+----------------
+
+The [linux] directory contains `mac_ndev_loopback.cpp`, a small host-side echo utility used to validate
+the USB-bridge mode end-to-end. It opens a serial device (default `/dev/ttyS3` at 115200 baud, 8N1, no
+flow control) and echoes back any bytes received from the Mac via the FujiNet adapter's USB serial port.
+Build it with any C++ compiler, e.g. `g++ linux/mac_ndev_loopback.cpp -o mac_ndev_loopback`.
+
+Building:
+---------
+
+The Mac-side projects are built with [THINK C] (Symantec C). Each top-level `.proj.bin` is the THINK C
+project file for one buildable target, stored in the git-converted binary form (see `.gitattributes` and
+`.gitignore`):
+
+* `FujiDeskAcc.proj.bin` — the user-facing Desk Accessory.
+* `FujiSerialAsync.proj.bin` — the preferred async `.Fuji` driver.
+* `FujiSerialBasic.proj.bin` — the earlier synchronous `.Fuji` driver.
+* `FujiSerialStub.proj.bin` — the tiny assembly name-stub driver.
+* `FujiTests.proj.bin` — the standalone test application described above.
+
+The C sources use `THINK_C` / `THINK_CPLUS` conditional compilation in places (see
+`FujiCommon/FujiInterfaces.h`), so porting to another 68k toolchain such as Retro68 would require
+addressing those compatibility paths.
+
+### Retro68 port (in progress)
+
+A parallel build under [Retro68] is being stood up so the project can be built from a Unix shell on
+modern macOS / Linux without a classic Mac OS environment. Sources for the port live under the
+`retro68/` directory; the original THINK C `.proj.bin` files are left untouched.
+
+* `BUILDING-RETRO68.md` — toolchain installation, gotchas (Boost 1.85, keg-only bison, etc.) and
+  hello-world verification.
+* `ROADMAP.md` — what's planned, what's done, and the order things land in.
+* `issues.jsonl` — line-delimited JSON issue tracker for in-flight work.
+
+[Retro68]: https://github.com/autc04/Retro68
+
+License:
+--------
+
+This project is licensed under the GNU General Public License v3 (or, at your option, any later version),
+as stated in the header of every source file (see e.g. `FujiCommon/FujiNet.h`). A standalone `LICENSE`
+file is not currently included in the repository.
+
+References:
+-----------
+
+* [FujiNet project] — main FujiNet site.
+* [FujiNet adapter] — Apple 68k FujiNet hardware.
+* [FujiNet fork] — modified FujiNet firmware used by this project.
+* [Bridge commit](https://github.com/FujiNetWIFI/fujinet-firmware/commit/6e289701f7c8e8d0bf71c6c6ffdf7b793a6349fb) — the upstream-relative diff that adds the floppy-serial bridge.
+* [floppy_serial_handler.cpp] — firmware-side handler for the bridged blocks.
+* Demo video on [YouTube].
+* [Architecture diagram][architecture].
 
 [floppy_serial_handler.cpp]: https://github.com/marciot/fujinet-firmware/blob/6e289701f7c8e8d0bf71c6c6ffdf7b793a6349fb/lib/device/mac/floppy_serial_handler.cpp#L20
 [FujiNet project]: https://fujinet.online
 [FujiNet adapter]: https://github.com/djtersteegc/Apple-68k-FujiNet
 [FujiNet fork]: https://github.com/marciot/fujinet-firmware
 [demonstration]: https://www.youtube.com/watch?v=d1GNirCGzVg
-[architecture]: https://github.com/marciot/mac68k-fujinet/raw/main/images/driver_diagram.svg "FujiNet Architecture"
+[architecture]: https://github.com/marciot/mac68k-fujinet-serial/raw/main/images/driver_diagram.svg "FujiNet Architecture"
+[THINK C]: https://en.wikipedia.org/wiki/THINK_C
 [linux]: linux/
 [FujiTests]: FujiTests
 [FujiCommon]: FujiCommon/

@@ -2,3 +2,6 @@
 
 *.proj
 *.rsrc
+
+# Retro68 out-of-tree build artifacts
+retro68/build/

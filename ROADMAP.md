@@ -52,6 +52,8 @@ THINK C would produce and dispatches correctly when invoked
   device-manager (PBControl/PBStatus/...) coverage is deferred
   until a real `.Fuji` driver exists to install (Phase 3).
 
+  ![FujiStubTest 5/5 PASS in Mini vMac](images/fujistubtest-5of5-pass.png)
+
 ### Phase 3 — Real driver port
 
 * **#5** Port the preferred async `.Fuji` driver

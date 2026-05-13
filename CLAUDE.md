@@ -26,3 +26,12 @@ hygiene as a standing requirement, not something to wait to be asked about:
   `~/Retro68-build/toolchain/bin` (on PATH via `~/.zshrc`).
 - Mini vMac (Plus variant) is the local emulator for smoke-testing 68000-era
   builds. Basilisk II (issue #4) is planned for larger targets and MacTCP.
+
+## History
+
+The Retro68 port (Phases 1–2 of `ROADMAP.md`) was bootstrapped over a
+multi-day pair-programming session with Paul in May 2026: toolchain
+stand-up, the FujiSerialStub port, and the FujiStubTest runtime harness
+that verified 5/5 dispatch slots in Mini vMac. Pick up from `issues.jsonl`
+and the roadmap's Phase 3 onward — start with #5 (FujiSerialAsync) unless
+the user directs otherwise.

@@ -141,6 +141,13 @@ FujiSerDataHndl getFujiSerialDataHndl (void);
 	#define Declare_LoMem(type, name, address)  type (name) : (address)
 #elif defined(THINK_CPLUS)
 	#define Declare_LoMem(type, name, address)  static type &(name) = *(type *) (address)
+#elif defined(__GNUC__)
+	/* Retro68/GCC: no compiler-level address binding. Read/write via
+	 * Multiversal Interfaces' LowMem.h accessors (LMGetTicks, LMGetScrnBase, ...)
+	 * or via explicit (*(volatile type *)addr). The macro stays defined so
+	 * the file parses cleanly under a GCC build that does not need direct
+	 * LoMem name binding. */
+	#define Declare_LoMem(type, name, address)  enum { name##_lomem_addr_ = (address) }
 #else
 	#error LoMem requires either C++ or THINK C
 #endif

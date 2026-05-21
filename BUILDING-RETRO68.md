@@ -97,6 +97,16 @@ what the sample's comment header says. PowerPC equivalents are in
   it with Retro68 requires Apple Universal Interfaces 3.x dropped into
   `~/github/Retro68/InterfacesAndLibraries/` before re-running
   `build-toolchain.bash`. Tracked as issue #2.
+- **`LedIndicators.h` is 100% THINK C inline asm.** Going through QuickDraw
+  from a VBL task is risky and the asm form doesn't translate verbatim, so
+  the Retro68 port of FujiSerialAsync (issue #5) replaces it with a small
+  C reimplementation in `retro68/FujiSerialAsync/led_indicators.c` that
+  pokes the framebuffer directly via `LMGetScrnBase()`. Same six 4-byte
+  glyphs, same on-screen positions.
+- **Symbols crossing the C ↔ asm boundary cannot be `static`.** The
+  FujiSerialAsync port's `vbl_asm.s` calls `emptyWriteBufDone`,
+  `fillReadBufDone`, and `fujiVBLTask` in the C file; those three must
+  have external linkage (no `static`). Linker errors otherwise.
 
 ## Verification
 

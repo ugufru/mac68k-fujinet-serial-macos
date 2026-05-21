@@ -9,4 +9,5 @@ project(mac68k_fujinet_retro68 C CXX ASM)
 #   cmake --build .
 
 add_subdirectory(FujiSerialStub)
+add_subdirectory(FujiSerialAsync)
 add_subdirectory(FujiStubTest)

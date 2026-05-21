@@ -5,3 +5,6 @@
 
 # Retro68 out-of-tree build artifacts
 retro68/build/
+
+# LaunchAPPL per-run temp dirs (hex-hex-hex-hex)
+/[0-9a-f]*-[0-9a-f]*-[0-9a-f]*-[0-9a-f]*/

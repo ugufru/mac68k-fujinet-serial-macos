@@ -56,16 +56,36 @@ THINK C would produce and dispatches correctly when invoked
 
 ### Phase 3 — Real driver port
 
-* **#5** Port the preferred async `.Fuji` driver
-  (`FujiSerial/FujiSerialAsync.c`) to Retro68. This is the first
-  port to exercise `FujiCommon/FujiInterfaces.h` and the
+* **#5** *(done)* Port the preferred async `.Fuji` driver
+  (`FujiSerial/FujiSerialAsync.c`) to Retro68. First port to
+  exercise `FujiCommon/FujiInterfaces.h` and the
   `THINK_C` / `THINK_CPLUS` conditional compilation paths against
-  GCC. Once it builds, the `FujiStubTest` harness can be extended
-  to install a real `.Fuji` and exercise the stubs through
-  `OpenDriver` / `PBControl` / etc.
+  GCC. Produces `FujiSerialAsync.rsrc.bin` —
+  `DRVR(-15904, .Fuji, sysHeap+locked+preload)`, flags `0x4F00`,
+  five dispatch entries, `_VInstall` A-trap embedded. Inline THINK
+  C asm split into sibling GAS sources; `LedIndicators` replaced
+  with a small C framebuffer-poke fallback.
+* **#10** Extend `FujiStubTest` to install the real `.Fuji` (via
+  `AddDrvr` or hand-stitched DCE), call `OpenDriver(".Fuji",
+  &refNum)`, and exercise the driver through
+  `PBControl` / `PBStatus` / `PBRead` / `PBWrite` by `refNum`.
+  This is the device-manager-level coverage that #8 deliberately
+  deferred, and it closes the runtime story for the driver port.
 
-### Phase 4 — Test app and dependencies
+### Phase 4 — User-facing build
 
+* **#7** Port `FujiDeskAcc`, the Desk Accessory that actually wires
+  the drivers into the unit table for end users. DA packaging under
+  Retro68 is the trickiest target (no direct sample, layout has to
+  be assembled from the `SystemExtension` / `WDEF` patterns).
+  Depends on the driver ports and a runtime-tested test app
+  (#5 + #10).
+
+### Phase 5 — Test app and MacTCP path
+
+* **#6** Port `FujiTests` (`FloppyTests.c`, `SerialTests.c`,
+  `TCPTests.c`). Floppy and Serial tests can land first; TCP
+  blocks on #2.
 * **#2** Source Apple Universal Interfaces 3.x and drop them into
   Retro68's `InterfacesAndLibraries/`. Required for any code path
   that uses MacTCP — Multiversal Interfaces (Retro68's bundled
@@ -73,16 +93,14 @@ THINK C would produce and dispatches correctly when invoked
 * **#4** Set up Basilisk II with a Quadra-class ROM and a System
   7.5+ disk image. Needed for testing the full driver stack at
   realistic memory sizes and (eventually) for MacTCP work.
-* **#6** Port `FujiTests` (`FloppyTests.c`, `SerialTests.c`,
-  `TCPTests.c`). The TCP tests depend on #2.
 
-### Phase 5 — User-facing
+### Parked
 
-* **#7** Port `FujiDeskAcc`, the Desk Accessory that actually wires
-  the drivers into the unit table for end users. DA packaging under
-  Retro68 is the trickiest target (no direct sample, layout has to
-  be assembled from the SystemExtension / WDEF patterns). Depends
-  on the driver ports and a runtime-tested test app.
+* **#9** Wire up LaunchAPPL for hands-off Mini vMac runs. Config is
+  in place but LaunchAPPL's per-run copy of the `minivmac` binary
+  breaks its macOS code signature, so the spawned emulator never
+  draws a window. Not blocking any other work; pick back up when
+  iteration friction starts to hurt.
 
 ## Out of scope (for now)
 
